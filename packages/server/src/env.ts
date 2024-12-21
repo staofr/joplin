@@ -14,7 +14,7 @@ const defaultEnvValues: EnvVariables = {
 	// General config
 	// ==================================================
 
-	APP_NAME: 'Joplin Server',
+	APP_NAME: 'Msun-Note-Server',
 	APP_PORT: 22300,
 	SIGNUP_ENABLED: false,
 	TERMS_ENABLED: false,
