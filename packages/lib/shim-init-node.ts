@@ -19,6 +19,7 @@ import FileApiDriverLocal from './file-api-driver-local';
 import * as mimeUtils from './mime-utils';
 import BaseItem from './models/BaseItem';
 import { Size } from '@joplin/utils/types';
+import { arch } from 'os';
 const { _ } = require('./locale');
 const http = require('http');
 const https = require('https');
@@ -168,6 +169,14 @@ function shimInit(options: ShimInitOptions = null) {
 	shim.randomBytes = async count => {
 		const buffer = require('crypto').randomBytes(count);
 		return Array.from(buffer);
+	};
+
+	shim.isAppleSilicon = () => {
+		return shim.isMac() && arch() === 'arm64';
+	};
+
+	shim.platformArch = () => {
+		return arch();
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -344,7 +353,7 @@ function shimInit(options: ShimInitOptions = null) {
 			const detectedType = await fileTypeFromFile(filePath);
 
 			if (detectedType) {
-				fileExt = detectedType.ext;
+				fileExt = fileExt ? fileExt : detectedType.ext;
 				resource.mime = detectedType.mime;
 			} else {
 				resource.mime = 'application/octet-stream';
@@ -391,7 +400,13 @@ function shimInit(options: ShimInitOptions = null) {
 	};
 
 	shim.attachFileToNoteBody = async function(noteBody, filePath, position = null, options = null) {
-		options = { createFileURL: false, markupLanguage: 1, ...options };
+		options = {
+			createFileURL: false,
+			markupLanguage: 1,
+			resourcePrefix: '',
+			resourceSuffix: '',
+			...options,
+		};
 
 		const { basename } = require('path');
 		const { escapeTitleText } = require('./markdownUtils').default;
@@ -412,16 +427,16 @@ function shimInit(options: ShimInitOptions = null) {
 		if (noteBody && position) newBody.push(noteBody.substr(0, position));
 
 		if (!options.createFileURL) {
-			newBody.push(Resource.markupTag(resource, options.markupLanguage));
+			newBody.push(options.resourcePrefix + Resource.markupTag(resource, options.markupLanguage) + options.resourceSuffix);
 		} else {
 			const filename = escapeTitleText(basename(filePath)); // to get same filename as standard drag and drop
 			const fileURL = `[${filename}](${toFileProtocolPath(filePath)})`;
-			newBody.push(fileURL);
+			newBody.push(options.resourcePrefix + fileURL + options.resourceSuffix);
 		}
 
 		if (noteBody) newBody.push(noteBody.substr(position));
 
-		return newBody.join('\n\n');
+		return newBody.join('');
 	};
 
 	shim.attachFileToNote = async function(note, filePath, options = {}) {

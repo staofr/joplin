@@ -1,5 +1,86 @@
 # Joplin iOS Changelog
 
+## [ios-v13.3.3](https://github.com/laurent22/joplin/releases/tag/ios-v13.3.3) - 2025-04-07T19:20:10Z
+
+- New: Add "swap line up" and "swap line down" to toolbar extended options (#12053 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- New: Plugins: Add command to hide the plugin panel viewer (#12018 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Explain why items could not be decrypted (#12048) (#11872 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Implement new note menu redesign (#11780 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Remove slider component module and replace integer settings with new validated component (#11822) (#10883 by [@mrjo118](https://github.com/mrjo118))
+- Improved: Update react-native-quick-crypto (#12067 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Changing the type of one list changes it for all the lists (#11986) (#11971 by [@Paramesh-T-S](https://github.com/Paramesh-T-S))
+- Fixed: Fix Markdown toolbar partially covered by keyboard on some iOS devices (#12027) (#11711 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix cursor moves to incorrect position when revising TextInput value (#11821) (#11820 by [@mrjo118](https://github.com/mrjo118))
+- Fixed: Restoring a note which was in a deleted notebook  (#12016) (#11934)
+
+## [ios-v13.3.2](https://github.com/laurent22/joplin/releases/tag/ios-v13.3.2) - 2025-03-16T11:47:05Z
+
+- New: Add setting migration for ocr.enabled (ab86b95)
+- Improved: Accessibility: Improve focus handling in the note actions menu and modal dialogs (#11929 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Make default modal close button accessible (#11957 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve encryption config screen accessibility (#11874) (#11846 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Re-Add iOS Dark Icon (#11943 by [@itzTheMeow](https://github.com/itzTheMeow))
+- Improved: Updated packages @bam.tech/react-native-image-resizer (v3.0.11)
+- Fixed: Accessibility: Fix "new note" and "new to-do" buttons are focusable even while invisible (#11899 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Accessibility: Fix focus gets stuck on "Attach" in the note actions menu (#11958 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Accessibility: Fix missing label on note actions menu dismiss button (#11954 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Accessibility: Fix plugins can't be installed using VoiceOver (#11931 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix disabled encryption keys list showing enabled keys (#11861) (#11858 by [@pedr](https://github.com/pedr))
+- Fixed: Fix voice recorder crash (#11876) (#11864 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Make tab size consistent between Markdown editor and viewer (and RTE) (#11940) (#11673)
+
+## [ios-v13.3.1](https://github.com/laurent22/joplin/releases/tag/ios-v13.3.1) - 2025-02-19T16:04:34Z
+
+- New: Add support for plugin editor views (#11831)
+- Improved: Accessibility: Improve contrast of faded URLs in Markdown editor (#11635 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Make it possible to create and edit profiles with a screen reader (#11797 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow adjusting the default note viewer font size (#11633) (#10824 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Allow internal links to target elements using the name attribute (#11671 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Do not add double newlines around attached files (#11690)
+- Improved: Harden failsafe logic to check for the presence of info.json, rather than just the item count (#11750 by [@mrjo118](https://github.com/mrjo118))
+- Improved: Highlight `==marked==` text in the Markdown editor (#11794 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Improve Welcome Notes with clearer instructions (#11656) (#11647 by [@pedr](https://github.com/pedr))
+- Improved: Logging: Log less information at level `warn` when a decryption error occurs (#11771 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Move S3 sync target out of beta (798e1b8)
+- Improved: Plugins: Legacy editor API: Fix delayed crash caused by out-of-bounds inputs (#11714 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Simplify getting the ID of the note open in an editor (#11841 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Support the showToast API (#11787 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Render strikethrough text in the editor (#11795) (#11790 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Support attaching audio recordings (#11836 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Toolbar: Show only half of last button to indicate scroll (#11772 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Update js-draw to version 1.27.2 (#11788 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages @adobe/css-tools (v4.4.1), @react-native-clipboard/clipboard (v1.14.3), @react-native-community/slider (v4.5.5)
+- Fixed: Adjust how items are queried by ID (#11734) (#11630 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Allow attaching videos to notes (#11840) (#11835 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Cancelling dev plugin path setup shows error (#11828) (#11827 by [@rathoreSahil](https://github.com/rathoreSahil))
+- Fixed: Fix "attach file" doesn't work the first time after startup (#11839 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix home screen new-note shortcuts are re-applied after switching notes (#11779 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Sync: Fix share not marked as readonly if the recipient has an outgoing share (#11770 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Use alternative fix to set the sqlite CursorWindow size to 50mb (#11726) (#11571 by [@mrjo118](https://github.com/mrjo118))
+- Security: Improve comment escaping (#11706 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [ios-v13.2.5](https://github.com/laurent22/joplin/releases/tag/ios-v13.2.5) - 2025-01-13T17:19:06Z
+
+- Fixed: Clicking on an external note link from within a note logs an error (#11619) (#11455 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [ios-v13.2.4](https://github.com/laurent22/joplin/releases/tag/ios-v13.2.4) - 2025-01-08T00:11:58Z
+
+- New: Plugin API: Add support for the renderMarkup command (#11494 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Accessibility: Improve sidemenu notebook list accessibility (#11556 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Add an accordion for disabled master keys on encryption screen (#11529) (#11486 by [@pedr](https://github.com/pedr))
+- Improved: Add more options when long pressing the icon on mobile (#11517) (#10374)
+- Improved: Display html notes using white theme (#11510) (#10609)
+- Improved: Mark biometric lock feature as stable (955d39b)
+- Improved: Plugin API: Implement the `toggleVisiblePanes` command (#11496 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Removed old hack that was making the note body move up and down (#11511)
+- Improved: Updated packages @react-native-clipboard/clipboard (v1.14.2), @rollup/plugin-node-resolve (v15.2.4), adm-zip (v0.5.16)
+- Improved: Upgrade js-draw to 1.26.0 (#11589 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Use real timers for sync operations (#11081)
+- Fixed: Fix blank screen on bringing app from background (#11555) (#11544 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix editor shows nothing when there are no selected note IDs (#11514) (#11264 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix missing "Insert Time" button (#11542) (#11539 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Locked out of mobile app due to broken fingerprint scanner (#10926)
+
 ## [ios-v13.2.2](https://github.com/laurent22/joplin/releases/tag/ios-v13.2.2) - 2024-12-12T16:39:28Z
 
 - New: Accessibility: Add checked/unchecked accessibility information to the "sort notes by" dialog (#11411 by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))

@@ -32,7 +32,9 @@ function Toolbar(props: ToolbarProps) {
 	const styles = styles_(props);
 	return (
 		<ToolbarBase
+			id="CodeMirrorToolbar"
 			style={styles.root}
+			scrollable={true}
 			items={props.toolbarButtonInfos}
 			disabled={!!props.disabled}
 			aria-label={_('Editor actions')}

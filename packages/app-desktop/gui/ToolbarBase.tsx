@@ -10,10 +10,12 @@ import { focus } from '@joplin/lib/utils/focusHandler';
 
 interface Props {
 	themeId: number;
+	scrollable: boolean;
 	style: React.CSSProperties;
 	items: ToolbarItem[];
 	disabled: boolean;
 	'aria-label': string;
+	id?: string;
 }
 
 const getItemType = (item: ToolbarItem) => {
@@ -177,9 +179,10 @@ const ToolbarBaseComponent: React.FC<Props> = props => {
 	return (
 		<div
 			ref={containerRef}
-			className='editor-toolbar'
+			className={`editor-toolbar ${props.scrollable ? '-scrollable' : ''}`}
 			style={props.style}
 
+			id={props.id ?? undefined}
 			role='toolbar'
 			aria-label={props['aria-label']}
 
@@ -191,7 +194,8 @@ const ToolbarBaseComponent: React.FC<Props> = props => {
 			<div className='group'>
 				{centerItemComps}
 			</div>
-			<div className='group -right'>
+			<div className='spacer' />
+			<div className='group'>
 				{rightItemComps}
 			</div>
 		</div>

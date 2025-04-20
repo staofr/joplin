@@ -11,6 +11,8 @@ function formatCssSize(v: any): string {
 export interface Options {
 	contentMaxWidth?: number;
 	contentMaxWidthTarget?: string;
+	contentWrapperSelector?: string;
+	scrollbarSize?: number;
 	themeId?: number;
 	whiteBackgroundNoteRendering?: boolean;
 }
@@ -83,7 +85,8 @@ export default function(theme: any, options: Options = null) {
 
 	const fontFamily = '\'Avenir Next\', \'Avenir\', \'Arial\', sans-serif';
 
-	const maxWidthTarget = options.contentMaxWidthTarget ? options.contentMaxWidthTarget : '#rendered-md';
+	const contentWrapperTarget = options.contentWrapperSelector ?? '#rendered-md';
+	const maxWidthTarget = options.contentMaxWidthTarget ? options.contentMaxWidthTarget : contentWrapperTarget;
 	const maxWidthCss = options.contentMaxWidth ? `
 		${maxWidthTarget} {
 			max-width: ${options.contentMaxWidth}px;
@@ -117,9 +120,17 @@ export default function(theme: any, options: Options = null) {
 			border-radius: 3px;
 			background-color: ${theme.codeBackgroundColor};
 		}
+
+		:root {
+			--scrollbar-size: ${Number(options.scrollbarSize ?? 7)}px;
+		}
+
 		::-webkit-scrollbar {
-			width: 7px;
-			height: 7px;
+			width: var(--scrollbar-size);
+			height: var(--scrollbar-size);
+		}
+		::-webkit-scrollbar-thumb {
+			border-radius: calc(var(--scrollbar-size) / 2);
 		}
 		::-webkit-scrollbar-corner {
 			background: none;
@@ -128,30 +139,29 @@ export default function(theme: any, options: Options = null) {
 			border: none;
 		}
 		::-webkit-scrollbar-thumb {
-			background: rgba(100, 100, 100, 0.3); 
-			border-radius: 5px;
+			background: ${theme.scrollbarThumbColor}; 
 		}
 		::-webkit-scrollbar-track:hover {
 			background: rgba(0, 0, 0, 0.1); 
 		}
 		::-webkit-scrollbar-thumb:hover {
-			background: rgba(100, 100, 100, 0.7); 
+			background: ${theme.scrollbarThumbColorHover}; 
 		}
 
 		${maxWidthCss}
 
 		/* Remove top padding and margin from first child so that top of rendered text is aligned to top of text editor text */
 
-		#rendered-md > h1:first-child,
-		#rendered-md > h2:first-child,
-		#rendered-md > h3:first-child,
-		#rendered-md > h4:first-child,
-		#rendered-md > ul:first-child,
-		#rendered-md > ol:first-child,
-		#rendered-md > table:first-child,
-		#rendered-md > blockquote:first-child,
-		#rendered-md > img:first-child,
-		#rendered-md > p:first-child {
+		${contentWrapperTarget} > h1:first-child,
+		${contentWrapperTarget} > h2:first-child,
+		${contentWrapperTarget} > h3:first-child,
+		${contentWrapperTarget} > h4:first-child,
+		${contentWrapperTarget} > ul:first-child,
+		${contentWrapperTarget} > ol:first-child,
+		${contentWrapperTarget} > table:first-child,
+		${contentWrapperTarget} > blockquote:first-child,
+		${contentWrapperTarget} > img:first-child,
+		${contentWrapperTarget} > p:first-child {
 			margin-top: 0;
 			padding-top: 0;
 		}
@@ -208,7 +218,7 @@ export default function(theme: any, options: Options = null) {
 		}
 		ul, ol {
 			padding-left: 0;
-			margin-left: 1.7em;
+			margin-left: ${theme.listTabSize};
 		}
 		li {
 			margin-bottom: .4em;
@@ -377,8 +387,8 @@ export default function(theme: any, options: Options = null) {
 		}
 
 		mark {
-			background: #F7D26E;
-			color: black;
+			background: ${theme.markHighlightBackgroundColor};
+			color: ${theme.searchMarkerColor};
 		}
 
 		/* =============================================== */
