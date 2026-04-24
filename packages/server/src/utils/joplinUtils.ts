@@ -221,6 +221,10 @@ async function renderNote(share: Share, note: NoteEntity, resourceInfos: Resourc
 		ResourceModel: Resource as OptionsResourceModel,
 	});
 
+	const renderNoteBody = async (themeId: number) => {
+		return markupToHtml.render(note.markup_language, note.body, themeStyle(themeId), renderOptions);
+	};
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	const renderOptions: any = {
 		resources: resourceInfos,
@@ -258,7 +262,8 @@ async function renderNote(share: Share, note: NoteEntity, resourceInfos: Resourc
 	};
 
 	try {
-		const result = await markupToHtml.render(note.markup_language, note.body, themeStyle(Setting.THEME_LIGHT), renderOptions);
+		const lightResult = await renderNoteBody(Setting.THEME_LIGHT);
+		const darkResult = await renderNoteBody(Setting.THEME_DARK);
 
 		const bodyHtml = await mustache_.renderView({
 			cssFiles: ['items/note'],
@@ -270,13 +275,14 @@ async function renderNote(share: Share, note: NoteEntity, resourceInfos: Resourc
 			content: {
 				note: {
 					...note,
-					bodyHtml: result.html,
+					bodyHtmlLight: lightResult.html,
+					bodyHtmlDark: darkResult.html,
 					updatedDateTime: formatDateTime(note.user_updated_time),
 				},
-				cssStrings: result.cssStrings.join('\n'),
+				cssStrings: lightResult.cssStrings.join('\n'),
 				assetsJs: `
 					const joplinNoteViewer = {
-						pluginAssets: ${JSON.stringify(result.pluginAssets)},
+						pluginAssets: ${JSON.stringify(lightResult.pluginAssets)},
 						appBaseUrl: ${JSON.stringify(baseUrl_)},
 					};
 				`,

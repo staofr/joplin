@@ -5,15 +5,21 @@
 <div id="joplin-container-pluginAssetsContainer"></div>
 
 <nav class="navbar" role="navigation" aria-label="main navigation">
-	<div class="navbar-brand logo-container">
-		<a class="navbar-item" href="{{logoUrl}}">
-			<img class="logo" src="{{logoSrc}}"/><span class="logo-text">{{logoTitle}}</span>
-		</a>
+	<div class="navbar-brand">
+		<div class="logo-container">
+			<a class="navbar-item" href="{{{global.baseUrl}}}">
+				<img class="logo" src="{{{global.baseUrl}}}/images/JoplinLogo.png"/><span class="logo-text">mSun</span>
+			</a>
+		</div>
+		<div class="navbar-actions">
+			<button id="theme-toggle-button" class="theme-toggle-button" type="button" aria-pressed="false"></button>
+		</div>
 	</div>
 </nav>
 
 <div class="note-main">
 	<p class="last-updated">Last updated: {{note.updatedDateTime}}</p>
 	<h1 class="title">{{note.title}}</h1>
-	{{{note.bodyHtml}}}
+	<div class="note-theme note-theme-light">{{{note.bodyHtmlLight}}}</div>
+	<div class="note-theme note-theme-dark">{{{note.bodyHtmlDark}}}</div>
 </div>

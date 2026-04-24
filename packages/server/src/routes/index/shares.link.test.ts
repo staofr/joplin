@@ -76,6 +76,8 @@ describe('shares.link', () => {
 		expect(bodyHtml).toContain('Testing title'); // Means the note has been rendered
 		expect(bodyHtml).toContain('Testing body');
 		expect(bodyHtml).toContain('<title>Testing title'); // Means the page title is set to the note title
+		expect(bodyHtml).toContain('theme-toggle-button');
+		expect(bodyHtml).toContain('note-theme-dark');
 	});
 
 	test('should load plugins', async () => {
