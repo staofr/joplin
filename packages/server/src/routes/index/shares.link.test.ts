@@ -78,6 +78,7 @@ describe('shares.link', () => {
 		expect(bodyHtml).toContain('<title>Testing title'); // Means the page title is set to the note title
 		expect(bodyHtml).toContain('theme-toggle-button');
 		expect(bodyHtml).toContain('note-theme-dark');
+		expect(bodyHtml).toContain('note-renderer-theme-style');
 	});
 
 	test('should load plugins', async () => {

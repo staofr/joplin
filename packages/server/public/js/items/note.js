@@ -2,6 +2,10 @@
 
 const themeStorageKey = 'joplin.share.theme';
 
+function isThemeDependentCssAsset(assetPath) {
+	return assetPath.indexOf('highlight.js/') >= 0;
+}
+
 function addPluginAssets(appBaseUrl, assets) {
 	if (!assets) return;
 
@@ -13,13 +17,44 @@ function addPluginAssets(appBaseUrl, assets) {
 		if (asset.mime === 'application/javascript') {
 			const script = document.createElement('script');
 			script.src = `${appBaseUrl}/js/${asset.path}`;
+			script.setAttribute('data-plugin-asset-path', asset.path);
 			pluginAssetsContainer.appendChild(script);
 		} else if (asset.mime === 'text/css') {
 			const link = document.createElement('link');
 			link.rel = 'stylesheet';
 			link.href = `${appBaseUrl}/css/${asset.path}`;
+			link.setAttribute('data-plugin-asset-path', asset.path);
 			pluginAssetsContainer.appendChild(link);
 		}
+	}
+}
+
+function applyThemePluginAssets(theme) {
+	const pluginAssetsContainer = document.getElementById('joplin-container-pluginAssetsContainer');
+	if (!pluginAssetsContainer) return;
+
+	const nextAssets = joplinNoteViewer.themePluginAssets && joplinNoteViewer.themePluginAssets[theme];
+	if (!nextAssets) return;
+
+	for (let i = pluginAssetsContainer.childNodes.length - 1; i >= 0; i--) {
+		const node = pluginAssetsContainer.childNodes[i];
+		if (node.nodeType !== 1) continue;
+		const element = node;
+		const assetPath = element.getAttribute('data-plugin-asset-path');
+		if (assetPath && isThemeDependentCssAsset(assetPath)) {
+			pluginAssetsContainer.removeChild(element);
+		}
+	}
+
+	for (let i = 0; i < nextAssets.length; i++) {
+		const asset = nextAssets[i];
+		if (asset.mime !== 'text/css' || !isThemeDependentCssAsset(asset.path)) continue;
+
+		const link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.href = `${joplinNoteViewer.appBaseUrl}/css/${asset.path}`;
+		link.setAttribute('data-plugin-asset-path', asset.path);
+		pluginAssetsContainer.appendChild(link);
 	}
 }
 
@@ -39,8 +74,20 @@ function buttonLabel(theme) {
 	return theme === 'dark' ? 'Light mode' : 'Dark mode';
 }
 
+function applyRenderedNoteStyle(theme) {
+	const styleElement = document.getElementById('note-renderer-theme-style');
+	if (!styleElement) return;
+
+	const styleText = joplinNoteViewer.renderedNoteStyles && joplinNoteViewer.renderedNoteStyles[theme];
+	if (!styleText) return;
+
+	styleElement.textContent = styleText;
+}
+
 function applyTheme(theme) {
 	document.documentElement.setAttribute('data-theme', theme);
+	applyRenderedNoteStyle(theme);
+	applyThemePluginAssets(theme);
 
 	const button = document.getElementById('theme-toggle-button');
 	if (!button) return;

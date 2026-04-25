@@ -60,6 +60,13 @@ type LinkedItemInfos = Record<Uuid, LinkedItemInfo>;
 
 type ResourceInfos = Record<Uuid, ResourceInfo>;
 
+interface ThemedRenderedNote {
+	bodyHtml: string;
+	styleCss: string;
+	cssStrings: string[];
+	pluginAssets: unknown[];
+}
+
 const pluginAssetRootDir_ = require('path').resolve(__dirname, '../..', 'node_modules/@joplin/renderer/assets');
 
 let db_: JoplinDatabase = null;
@@ -221,8 +228,28 @@ async function renderNote(share: Share, note: NoteEntity, resourceInfos: Resourc
 		ResourceModel: Resource as OptionsResourceModel,
 	});
 
-	const renderNoteBody = async (themeId: number) => {
-		return markupToHtml.render(note.markup_language, note.body, themeStyle(themeId), renderOptions);
+	const codeThemeByThemeId = (themeId: number) => {
+		return themeId === Setting.THEME_DARK ? 'atom-one-dark-reasonable.css' : 'atom-one-light.css';
+	};
+
+	const splitRenderedNote = (html: string, cssStrings: string[], pluginAssets: unknown[]): ThemedRenderedNote => {
+		const styleMatch = html.match(/^<style>([\s\S]*?)<\/style>([\s\S]*)$/);
+		if (!styleMatch) throw new Error('Could not extract rendered note style block');
+
+		return {
+			bodyHtml: styleMatch[2],
+			styleCss: styleMatch[1],
+			cssStrings,
+			pluginAssets,
+		};
+	};
+
+	const renderNoteBody = async (themeId: number): Promise<ThemedRenderedNote> => {
+		const result = await markupToHtml.render(note.markup_language, note.body, themeStyle(themeId), {
+			...renderOptions,
+			codeTheme: codeThemeByThemeId(themeId),
+		});
+		return splitRenderedNote(result.html, result.cssStrings, result.pluginAssets);
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -273,20 +300,30 @@ async function renderNote(share: Share, note: NoteEntity, resourceInfos: Resourc
 			titleOverride: true,
 			path: 'index/items/note',
 			content: {
-				note: {
-					...note,
-					bodyHtmlLight: lightResult.html,
-					bodyHtmlDark: darkResult.html,
-					updatedDateTime: formatDateTime(note.user_updated_time),
+					note: {
+						...note,
+						bodyHtmlLight: lightResult.bodyHtml,
+						bodyHtmlDark: darkResult.bodyHtml,
+						bodyStyleCssLight: lightResult.styleCss,
+						bodyStyleCssDark: darkResult.styleCss,
+						updatedDateTime: formatDateTime(note.user_updated_time),
+					},
+					cssStrings: lightResult.cssStrings.join('\n'),
+					assetsJs: `
+						const joplinNoteViewer = {
+							pluginAssets: ${JSON.stringify(lightResult.pluginAssets)},
+							themePluginAssets: {
+								light: ${JSON.stringify(lightResult.pluginAssets)},
+								dark: ${JSON.stringify(darkResult.pluginAssets)},
+							},
+							appBaseUrl: ${JSON.stringify(baseUrl_)},
+							renderedNoteStyles: {
+								light: ${JSON.stringify(lightResult.styleCss)},
+								dark: ${JSON.stringify(darkResult.styleCss)},
+							},
+						};
+					`,
 				},
-				cssStrings: lightResult.cssStrings.join('\n'),
-				assetsJs: `
-					const joplinNoteViewer = {
-						pluginAssets: ${JSON.stringify(lightResult.pluginAssets)},
-						appBaseUrl: ${JSON.stringify(baseUrl_)},
-					};
-				`,
-			},
 		}, { prefersDarkEnabled: false });
 
 		return {

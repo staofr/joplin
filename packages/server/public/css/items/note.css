@@ -60,6 +60,13 @@ body.page-note {
 	background-color: #f6f8fa;
 }
 
+.page-note .theme-toggle-button[aria-pressed="true"] {
+	background-color: #1f2937;
+	border-color: #1f2937;
+	color: #ffffff;
+	box-shadow: 0 0 0 3px rgba(31, 35, 40, 0.08);
+}
+
 .page-note .note-main {
 	margin-top: 2em;
 	max-width: 840px;
@@ -71,14 +78,26 @@ body.page-note {
 }
 
 .page-note .last-updated {
-	font-size: 1.1em;
+	border-top: 1px solid rgba(127, 127, 127, 0.16);
+	font-size: 0.95em;
+	margin-top: 2rem;
+	padding-top: 0.9rem;
 	opacity: 0.6;
+}
+
+html[data-theme="dark"] .page-note .last-updated {
+	border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .page-note h1.title {
 	font-size: 2.2em;
 	margin-top: 0.4em;
+	margin-bottom: 1.25rem;
 	border-bottom: none;
+}
+
+.page-note #rendered-md > :first-child {
+	margin-top: 0;
 }
 
 .page-note .note-theme {
@@ -110,6 +129,13 @@ html[data-theme="dark"] .page-note .theme-toggle-button:hover {
 	background-color: #374151;
 }
 
+html[data-theme="dark"] .page-note .theme-toggle-button[aria-pressed="true"] {
+	background-color: #e5e7eb;
+	border-color: #e5e7eb;
+	color: #111827;
+	box-shadow: 0 0 0 3px rgba(229, 231, 235, 0.12);
+}
+
 html[data-theme="dark"] .page-note .last-updated {
 	color: #cbd5e1;
 }
@@ -138,6 +164,24 @@ https://github.com/laurent22/joplin/issues/6370
 }
 
 @media (max-width: 640px) {
+	.page-note .note-main {
+		margin-top: 1.25rem;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		padding-bottom: 1.5rem;
+	}
+
+	.page-note h1.title {
+		font-size: 1.9em;
+		margin-top: 0.25em;
+		margin-bottom: 0.75rem;
+	}
+
+	.page-note .last-updated {
+		margin-top: 1.5rem;
+		padding-top: 0.75rem;
+	}
+
 	.page-note .navbar-brand {
 		gap: 0.5rem;
 	}
@@ -153,5 +197,61 @@ https://github.com/laurent22/joplin/issues/6370
 
 	.page-note .logo-text {
 		font-size: 1.8em;
+	}
+
+	.page-note pre,
+	.page-note pre.hljs,
+	.page-note pre code {
+		white-space: pre-wrap;
+		word-break: break-word;
+		overflow-wrap: anywhere;
+	}
+
+	.page-note pre,
+	.page-note pre.hljs {
+		font-size: 0.9em;
+		padding: 0.75rem;
+		border-radius: 0.6rem;
+		box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.18);
+	}
+
+	html[data-theme="dark"] .page-note pre,
+	html[data-theme="dark"] .page-note pre.hljs {
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+
+	.page-note table {
+		border-radius: 0.6rem;
+		box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.16);
+		display: block;
+		font-size: 0.92em;
+		margin-top: 0.75rem;
+		margin-bottom: 1rem;
+		overflow-x: auto;
+		width: 100%;
+	}
+
+	html[data-theme="dark"] .page-note table {
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+
+	.page-note table th,
+	.page-note table td {
+		padding: 0.35em 0.6em;
+		word-break: break-word;
+	}
+
+	.page-note #rendered-md p,
+	.page-note #rendered-md ul,
+	.page-note #rendered-md ol,
+	.page-note #rendered-md blockquote,
+	.page-note #rendered-md pre,
+	.page-note #rendered-md table {
+		margin-top: 0.75rem;
+		margin-bottom: 1rem;
+	}
+
+	.page-note #rendered-md li {
+		margin-bottom: 0.3em;
 	}
 }

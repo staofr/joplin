@@ -37,14 +37,12 @@ Because the rendered note includes theme-specific HTML and CSS from the renderer
 
 ## Final Approach
 
-The implemented solution uses two separately rendered versions of the note body:
+The final implementation uses:
 
-1. A light-rendered note HTML block
-2. A dark-rendered note HTML block
+1. Two separately rendered versions of the note body
+2. One active renderer style tag whose CSS text is replaced when the theme changes
 
-The page then switches between them using CSS and a small client-side theme toggle script.
-
-This approach was selected because it is the lowest-risk change for this codebase. It avoids rewriting renderer output CSS and leaves the existing share rendering behavior intact.
+This matters because the renderer emits global selectors for tables, code blocks, inline code, and related content. Simply keeping two hidden `<style>` blocks in the DOM would not isolate the theme styles. The final implementation avoids that issue by ensuring only one renderer theme CSS payload is active at a time.
 
 ## Files Changed
 
@@ -53,18 +51,33 @@ This approach was selected because it is the lowest-risk change for this codebas
 Purpose:
 
 1. Render the shared note twice, once with `Setting.THEME_LIGHT` and once with `Setting.THEME_DARK`
-2. Pass both rendered results to the share page template
+2. Split each rendered result into themed CSS text and themed body HTML
+3. Pass the themed CSS payloads, themed body payloads, and theme-specific plugin assets to the template and front-end script
 
 Key changes:
 
-1. Added a local helper `renderNoteBody(themeId)` inside `renderNote(...)`
-2. Rendered:
+1. Added `ThemedRenderedNote`
+2. Added `splitRenderedNote(...)` to extract:
+   - `styleCss`
+   - `bodyHtml`
+3. Rendered:
    - `lightResult`
    - `darkResult`
-3. Replaced the old single `bodyHtml` template field with:
+4. Replaced the old single `bodyHtml` template field with:
    - `bodyHtmlLight`
    - `bodyHtmlDark`
-4. Continued to pass plugin asset bootstrap data through `assetsJs`
+5. Added themed renderer CSS payloads:
+   - `bodyStyleCssLight`
+   - `bodyStyleCssDark`
+6. Added a theme-specific code highlight theme selection:
+   - `atom-one-light.css`
+   - `atom-one-dark-reasonable.css`
+7. Exposed the final theme CSS payloads to the client through `assetsJs` as:
+   - `renderedNoteStyles.light`
+   - `renderedNoteStyles.dark`
+8. Exposed theme-specific plugin asset sets to the client through `assetsJs` as:
+   - `themePluginAssets.light`
+   - `themePluginAssets.dark`
 
 Relevant section:
 
@@ -78,8 +91,10 @@ And:
 ```ts
 note: {
 	...note,
-	bodyHtmlLight: lightResult.html,
-	bodyHtmlDark: darkResult.html,
+	bodyHtmlLight: lightResult.bodyHtml,
+	bodyHtmlDark: darkResult.bodyHtml,
+	bodyStyleCssLight: lightResult.styleCss,
+	bodyStyleCssDark: darkResult.styleCss,
 	updatedDateTime: formatDateTime(note.user_updated_time),
 }
 ```
@@ -90,15 +105,24 @@ Purpose:
 
 1. Add the theme toggle button to the share page navbar
 2. Render separate light and dark note containers
+3. Provide a single active renderer theme style tag
 
 Key changes:
 
 1. Added a button with ID `theme-toggle-button`
-2. Replaced the single rendered note block with:
+2. Added a single active style element:
+   - `#note-renderer-theme-style`
+3. Replaced the single rendered note block with:
    - `.note-theme.note-theme-light`
    - `.note-theme.note-theme-dark`
 
 Current structure:
+
+```mustache
+<style id="note-renderer-theme-style">{{{note.bodyStyleCssLight}}}</style>
+```
+
+And:
 
 ```mustache
 <div class="navbar-actions">
@@ -121,6 +145,7 @@ Purpose:
 2. Style the theme toggle button
 3. Control which note body is visible
 4. Adjust the mobile navbar layout
+5. Improve mobile readability for code blocks, tables, title spacing, and footer metadata
 
 Key changes:
 
@@ -128,8 +153,12 @@ Key changes:
 2. Added `.theme-toggle-button` styling
 3. Added `.note-theme-light` / `.note-theme-dark` visibility rules
 4. Added dark-mode navbar, button, and text adjustments
-5. Added a mobile rule set that keeps the button inline with the logo
-6. Added `white-space: nowrap` to the button so the label does not wrap
+5. Added active-state styling for the theme toggle button using `aria-pressed`
+6. Added a mobile rule set that keeps the button inline with the logo
+7. Added `white-space: nowrap` to the button so the label does not wrap
+8. Moved the timestamp to the bottom of the page and styled it as footer metadata
+9. Added mobile-specific code block wrapping and tighter spacing
+10. Added mobile-specific table sizing, border, and radius styling
 
 Important mobile behavior:
 
@@ -158,17 +187,23 @@ Purpose:
 
 1. Apply the selected theme to the share page
 2. Toggle between light and dark mode
-3. Persist the user choice in `localStorage`
-4. Use the system preference on first load
+3. Replace the active renderer theme CSS when the theme changes
+4. Replace theme-dependent plugin CSS assets when the theme changes
+5. Persist the user choice in `localStorage`
+6. Use the system preference on first load
 
 Key changes:
 
 1. Added `themeStorageKey = 'joplin.share.theme'`
 2. Added `systemTheme()`
 3. Added `buttonLabel(theme)`
-4. Added `applyTheme(theme)`
-5. Added `loadTheme()`
-6. Added button click handling
+4. Added `applyRenderedNoteStyle(theme)`
+5. Added `applyThemePluginAssets(theme)`
+6. Added `applyTheme(theme)`
+7. Added `loadTheme()`
+8. Added button click handling
+
+The final implementation also switches the syntax highlighting CSS for code blocks so that dark mode no longer keeps the default light highlight background.
 
 Final button labels:
 
@@ -201,6 +236,7 @@ Added expectations in the basic note rendering test:
 ```ts
 expect(bodyHtml).toContain('theme-toggle-button');
 expect(bodyHtml).toContain('note-theme-dark');
+expect(bodyHtml).toContain('note-renderer-theme-style');
 ```
 
 ## What Was Not Changed
@@ -210,18 +246,18 @@ The following share behavior was deliberately left unchanged:
 1. Share route and permission logic in `packages/server/src/routes/index/shares.ts`
 2. Linked note redirect and access checks
 3. Shared resource URL generation
-4. Plugin asset loading behavior
+4. Plugin asset loading behavior outside the theme-dependent highlight CSS switching for the share page
 5. Share resource download behavior
-6. Markdown renderer configuration besides rendering two themed copies
+6. Markdown renderer configuration besides rendering two themed copies and switching the active CSS payload
 
 ## Why This Approach Was Chosen
 
 Two implementation approaches were considered:
 
 1. One note DOM plus two CSS theme layers
-2. Two pre-rendered note DOM blocks, one light and one dark
+2. Two pre-rendered note DOM blocks with separately controlled themed CSS
 
-The second approach was chosen because it avoids trying to re-scope or override complex renderer output. The note renderer emits theme-sensitive HTML and CSS, so rendering two separate copies was the simplest and most reliable way to support a toggle without broader regressions.
+The final implementation stays closest to the second approach but avoids leaving two renderer style blocks active in the document at once. That extra refinement was necessary because the renderer emits global selectors for elements such as tables, code blocks, and inline code.
 
 ## Validation Performed
 
@@ -249,8 +285,9 @@ Recommended manual checks for the public share page:
 4. Toggle between light and dark mode
 5. Refresh the page and confirm the chosen theme persists
 6. Verify note title and updated timestamp remain readable in both themes
-7. Verify code blocks, tables, links, images, and Mermaid blocks render correctly in both themes
+7. Verify code blocks, including syntax highlighting background, inline code, tables, links, images, and Mermaid blocks render correctly in both themes
 8. Verify the button remains on the same row as the logo in mobile viewport widths
+9. Verify the bottom timestamp appears visually separated from the main content
 
 ## Final Changed Files List
 
